@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CoNexusGame } from '@libv2/story';
+  import { CoNexusGame } from '@lib/story';
 
   export let section: string;
   export let topicName: string;

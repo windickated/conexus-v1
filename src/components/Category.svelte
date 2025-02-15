@@ -2,11 +2,12 @@
   import { onMount } from 'svelte';
   import {
     CoNexusApp
-  } from '@libv2/view';
+  } from '@lib/view';
   import { checkUserState, checkWeb3LoginState } from '@utils/route-guard';
   import { web3LoggedIn } from '@stores/account';
-  import StoryCollection from './utils/StoryCollection.svelte';
+
   import Links from './utils/Links.svelte';
+  import StoryCollection from './utils/StoryCollection.svelte';
 
   export let section: string;
   let isWeb3LoggedIn: boolean = false;

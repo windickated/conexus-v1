@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { CoNexus } from '@lib/conexus';
-import { CoNexusGame } from '@libv2/story';
+import { CoNexusGame } from '@lib/story';
 
 export const storyOld = writable<Nullable<CoNexus>>(null);
 export const story = writable<Nullable<CoNexusGame>>(null);

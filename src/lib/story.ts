@@ -1,10 +1,13 @@
+import { tracks } from '@constants/tracks';
 import { api_error } from '@errors/index';
 import { GameAPI } from '@service/routes';
-import { background_image, background_music } from '@stores/conexus';
-import { story, loading } from '@stores/conexus';
+import {
+  background_image,
+  background_music,
+  loading,
+  story,
+} from '@stores/conexus';
 import { toastStore } from '@stores/toast';
-
-import { tracks } from 'src/libv2/constants';
 
 export let storyTitle: string;
 

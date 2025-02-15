@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CoNexusApp } from '@libv2/view';
+  import { CoNexusApp } from '@lib/view';
   import { web3LoggedIn } from '@stores/account';
 
   import MenuTile from './utils/MenuTile.svelte';

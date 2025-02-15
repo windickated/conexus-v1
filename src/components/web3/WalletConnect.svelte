@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { createRoot } from 'react-dom/client';
 
-  import YourApp from './Rainbow';
+  import RainbowConnect from './Rainbow';
 
   import { showProfile } from '@stores/modal';
 
@@ -13,7 +13,7 @@
     const reactRoot = document.getElementById('react-root');
     if (reactRoot) {
       const root = createRoot(reactRoot); // Create a root
-      root.render(YourApp(linking, title));
+      root.render(RainbowConnect(linking, title));
     }
   });
 

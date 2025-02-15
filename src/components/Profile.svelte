@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import { Account } from '@libv2/account';
+  import { Account } from '@lib/account';
   import {
     authenticated,
     referralCodes,

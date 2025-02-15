@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Account } from '@libv2/account';
+  import { Account } from '@lib/account';
 
   export let token: string;
 

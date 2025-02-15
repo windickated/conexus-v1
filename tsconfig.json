@@ -8,7 +8,7 @@
       "@errors/*": ["src/errors/*"],
       "@layouts/*": ["src/layouts/*"],
       "@lib/*": ["src/lib/*"],
-      "@libv2/*": ["src/libv2/*"],
+      "@constants/*": ["src/constants/*"],
       "@service/*": ["src/service/*"],
       "@stores/*": ["src/stores/*"],
       "@styles/*": ["src/styles/*"],

@@ -4,7 +4,7 @@
   import BackgroundMusic from '@components/music/BackgroundMusic.svelte';
   import Tts from '@components/music/Tts.svelte';
   import Step from '@components/Step.svelte';
-  import { CoNexusGame } from '@libv2/story';
+  import { CoNexusGame } from '@lib/story';
   import { loading, story, background_image } from '@stores/conexus';
   import {
     showModal,
@@ -12,15 +12,11 @@
     handleSecondButton,
     modalContent,
   } from '@stores/modal';
-<<<<<<< HEAD
-  import Share from './utils/Share.svelte';
-=======
   import { checkUserState } from '@utils/route-guard';
   
-  import Share from './Share.svelte';
->>>>>>> 9049663 (refactor initial commit, using internal backend)
   import Profile from './Profile.svelte';
   import BackArrow from './utils/BackArrow.svelte';
+  import Share from './utils/Share.svelte';
 
   export let story_name: string;
 

@@ -1,5 +1,5 @@
 // import Account from '@lib/auth';
-import { Account } from '@libv2/account';
+import { Account } from '@lib/account';
 import { authenticated, availables } from '@stores/account';
 import { isAvailable } from './validation';
 

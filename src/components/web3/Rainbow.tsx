@@ -143,22 +143,7 @@ const Web3Provider = ({ linking, children }) => {
   );
 };
 
-// export const App = () => {
-//   return (
-//     <Web3Provider>
-//       <ConnectButton
-//         label="with Wallet Connect"
-//         showBalance={false}
-//         accountStatus={{
-//           smallScreen: 'avatar',
-//           largeScreen: 'full',
-//         }}
-//       />
-//     </Web3Provider>
-//   );
-// };
-
-const YourApp = (linking: boolean, title: string) => {
+const RainbowConnect = (linking: boolean, title: string) => {
   return (
     <Web3Provider linking={linking}>
       <ConnectButton.Custom>
@@ -245,4 +230,4 @@ const YourApp = (linking: boolean, title: string) => {
   );
 };
 
-export default YourApp;
+export default RainbowConnect;
