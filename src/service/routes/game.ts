@@ -102,14 +102,10 @@ export default class GameAPI extends Fetcher {
    * @returns A promise that resolves to an APIResponse containing the response data or an error.
    */
   async image(story_id: string) {
-    return this.request<Blob>(
-      `/game/image/`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ story_id }),
-      },
-      'blob',
-    );
+    return this.request<string>(`/game/image/`, {
+      method: 'POST',
+      body: JSON.stringify({ story_id }),
+    });
   }
 
   /**
@@ -118,7 +114,7 @@ export default class GameAPI extends Fetcher {
    * @returns A promise that resolves to an APIResponse containing the response data or an error.
    */
   async imageV2(story_id: string) {
-    return this.request<{ jobID: string }>(`/game/image-v2/`, {
+    return this.request<{ job_id: string }>(`/game/image-v2`, {
       method: 'POST',
       body: JSON.stringify({ story_id }),
     });
@@ -136,7 +132,6 @@ export default class GameAPI extends Fetcher {
         method: 'POST',
         body: JSON.stringify({ story_id }),
       },
-      'blob',
     );
   }
 

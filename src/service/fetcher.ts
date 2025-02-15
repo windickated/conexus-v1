@@ -37,7 +37,7 @@ export default class Fetcher {
    * Creates an instance of Fetcher.
    * @param baseUrl - The base URL for the API.
    */
-  constructor(baseUrl: string) {
+  constructor(baseUrl: string = import.meta.env.VITE_API_URL as string) {
     this.baseUrl = baseUrl;
   }
 
@@ -78,17 +78,5 @@ export default class Fetcher {
     }
 
     return responseData;
-
-    // if (!response.ok) {
-    //   return {
-    //     error: {
-    //       message:
-    //         responseData.error || response.statusText || 'An error occurred',
-    //       details: isJson ? responseData.error : responseData,
-    //     },
-    //   };
-    // }
-
-    // return { data: responseData };
   }
 }

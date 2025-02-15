@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { StepData } from '@stores/types';
+  import { onMount } from 'svelte';
+
   import { story } from '@stores/conexus';
   import { tts_volume } from '@stores/volumes';
-  import { onMount } from 'svelte';
 
   let audio: HTMLAudioElement;
   let last_tts: Blob | null = null;

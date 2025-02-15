@@ -126,6 +126,20 @@ export class Account {
     authenticated.set({ user: data.user, loggedIn: true });
   }
 
+  static async getUser(): Promise<User | null> {
+    const accountAPI = new AccountAPI(import.meta.env.PUBLIC_BACKEND);
+    const { data, error } = await accountAPI.me();
+
+    if (!data) {
+      if (error) {
+        api_error(error);
+      }
+      return null;
+    }
+
+    return data.user;
+  }
+
   async changePassword(changePasswrodData: ChangePassword): Promise<void> {
     const { data, error } = await this.accountAPI.changePassword(
       changePasswrodData.old_password,
