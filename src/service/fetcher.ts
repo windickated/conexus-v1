@@ -67,14 +67,22 @@ export default class Fetcher {
 
     const contentType = response.headers.get('Content-Type');
     const isJson = contentType && contentType.includes('application/json');
-    let responseData: any;
+    let responseData: APIResponse<T>;
 
     if (responseType === 'json' && isJson) {
       responseData = await response.json();
     } else if (responseType === 'blob') {
-      responseData = await response.blob();
+      const blob = await response.blob();
+
+      responseData = {
+        data: blob as T,
+      };
     } else {
-      responseData = await response.text();
+      const respText = await response.text();
+
+      responseData = {
+        data: respText as unknown as T,
+      };
     }
 
     return responseData;

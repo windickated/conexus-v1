@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { afterUpdate } from 'svelte';
+  
+  import { storyTitle as _storyTitle } from '@libv2/story';
   import { fullscreen, story, loading } from '@stores/conexus';
   import { background_volume, tts_volume } from '@stores/volumes';
-  import { storyTitle as _storyTitle } from '@libv2/story';
 
   import Slider from './music/Slider.svelte';
-  import { afterUpdate } from 'svelte';
 
   let fullWidthImage: boolean = false;
   let imageWrapper: HTMLDivElement;

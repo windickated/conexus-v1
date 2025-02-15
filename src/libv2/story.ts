@@ -183,6 +183,7 @@ export class CoNexusGame extends GameAPI {
   // Play background music
   private static async playBackgroundMusic(story_name: string): Promise<void> {
     let queue: string[] = JSON.parse(localStorage.getItem('queue') ?? '[]');
+
     let categoryTrackURL: string | null = null;
 
     if (story_name) {
@@ -282,33 +283,13 @@ export class CoNexusGame extends GameAPI {
         this.hasFetched = false;
       }, 5000); // Adjust the delay as needed
     }
-
-    // const { data, error } = await this.imageStatusV2(
-    //   this.step_data.id,
-    //   this.jobID,
-    // );
-
-    // if (!data) {
-    //   if (error) {
-    //     api_error(error);
-    //   } else {
-    //     toastStore.show('Error getting image status', 'error');
-    //   }
-    //   this.#clear_interval();
-    //   return;
-    // }
-
-    // if (data.status === 'ready') {
-    //   this.step_data.image = data.image;
-    //   story.set(this);
-    //   this.#clear_interval();
-    // }
   }
 
   // Text to speech
   async #textToSpeech(): Promise<void> {
     const { data, error } = await this.getTTS(this.step_data.id);
 
+    console.log('TTS data', data);
     if (!data) {
       if (error) {
         api_error(error);
