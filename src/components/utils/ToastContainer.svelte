@@ -1,5 +1,6 @@
 <script>
   import { toastStore } from '@stores/toast';
+  
   import Toast from './Toast.svelte';
 
   let toasts = [];

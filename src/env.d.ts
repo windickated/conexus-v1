@@ -76,10 +76,11 @@ interface ReferralSignUp {
   referral_code: string;
 }
 
-interface ContinuableStory {
+type ContinuableStory = {
   story_id: string;
   category: string;
-}
+  created?: string;
+};
 
 type Topic = {
   name: string;
@@ -102,12 +103,15 @@ type Available = {
 
 type StepData = {
   step: number;
+  title?: string;
   story: string;
   end: boolean;
   summary: string;
   trait: string;
+  trait_description?: string;
   options: string[];
   image?: string;
+  choice?: number;
   tts?: Blob;
 };
 

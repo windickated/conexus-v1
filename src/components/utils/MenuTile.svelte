@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { DynSection } from '@lib/conexus';
   import { web3LoggedIn } from '@stores/account';
 
-  export let section: DynSection;
+  export let section: Section;
 
   let isWeb3LoggedIn: boolean = false;
 

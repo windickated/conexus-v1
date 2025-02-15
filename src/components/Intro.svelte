@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { CoNexus } from '@lib/conexus';
+  import { CoNexusApp } from '@libv2/view';
   import { web3LoggedIn } from '@stores/account';
 
   import MenuTile from './utils/MenuTile.svelte';
 
   let isWeb3LoggedIn: boolean = false;
+
+  let app: CoNexusApp = new CoNexusApp();
 
   web3LoggedIn.subscribe((value) => {
     isWeb3LoggedIn = value;
@@ -19,7 +21,7 @@
 <section class="blur">
   <h3>{menuText[0]}</h3>
 
-  {#await CoNexus.sections()}
+  {#await app.getSections()}
     <div class="conexus-menu-tiles">
       {#each Array(3) as _}
         <div class="tile">

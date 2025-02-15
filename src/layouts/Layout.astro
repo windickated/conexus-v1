@@ -1,13 +1,14 @@
 ---
-import '../styles/global.css';
-import '../styles/rainbow-kit.css';
-import '../styles/icons.css';
 import { ViewTransitions } from 'astro:transitions';
 
-import Profile from '../components/Profile.svelte';
-import ToastContainer from '../components/utils/ToastContainer.svelte';
-import Modal from '../components/utils/Modal.svelte';
-import BackArrow from '../components/utils/BackArrow.svelte';
+import BackArrow from '@components/BackArrow.svelte';
+import Profile from '@components/Profile.svelte';
+import Modal from '@components/Modal.svelte';
+import ToastContainer from '@components/ToastContainer.svelte';
+
+import '@styles/global.css';
+import '@styles/rainbow-kit.css';
+import '@styles/icons.css';
 
 const {
   header,

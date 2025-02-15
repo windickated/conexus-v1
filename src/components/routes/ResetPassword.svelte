@@ -1,7 +1,9 @@
 <script lang="ts">
-  import Account from '@lib/auth';
+  import { Account } from '@libv2/account';
 
   export let token: string;
+
+  let acct: Account = new Account();
 
   let email: string = '';
   let password: string = '';
@@ -72,7 +74,7 @@
     {/if}
 
     <button
-      on:click={() => Account.resetPassword({ email, password, token })}
+      on:click={() => acct.resetPassword({ email, password, token })}
       disabled={!validation}
     >
       Reset Password

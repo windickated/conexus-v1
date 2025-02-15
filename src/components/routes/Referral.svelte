@@ -1,12 +1,14 @@
 <script lang="ts">
-  import Account from '@lib/auth';
+  import { Account } from '@libv2/account';
   import { toastStore } from '@stores/toast';
 
   let code: string = '';
 
+  let acct: Account = new Account();
+
   const useReferralCode = async () => {
     try {
-      await Account.userReferralCode(code);
+      await acct.useReferralCode(code);
       toastStore.show('Referral code submitted successfully!');
       window.location.href = '/'; // Redirect to the home page
     } catch (error) {
@@ -20,7 +22,7 @@
   let referralCodeValid = false;
   async function validateReferralCode() {
     const referralObject: ReferralCode | null =
-      await Account.validateReferralCode(code);
+      await acct.validateReferralCode(code);
     if (referralObject) {
       referralCodeValid = true;
     } else {
@@ -53,7 +55,7 @@
     />
 
     {#if code.length === 16}
-      {#await Account.validateReferralCode(code)}
+      {#await acct.validateReferralCode(code)}
         <p class="validation gray">Checking referral code...</p>
       {:then referralObject}
         {#if referralObject}

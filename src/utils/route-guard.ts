@@ -1,4 +1,4 @@
-import Account from '@lib/auth';
+// import Account from '@lib/auth';
 import { authenticated, availables } from '@stores/account';
 import { isAvailable } from './validation';
 
@@ -25,24 +25,29 @@ export async function checkUserState(path: string): Promise<void> {
   }
 
   if (isRouteMatched(path, protectedRoutes)) {
-    const authData = await Account.middlewareAuthme();
+    let authData: Nullable<User>;
+
+    authenticated.subscribe((value) => {
+      authData = value.user;
+    });
+    // const authData = await Account.middlewareAuthme();
 
     if (!authData) {
       redirectTo('/');
       return;
     }
 
-    const [user, available] = authData;
+    // const [user, available] = authData;
 
-    authenticated.set({ user: user, loggedIn: true });
-    availables.set(available);
+    // authenticated.set({ user: user, loggedIn: true });
+    // availables.set(available);
 
     // if (!isAvailable(available)) {
     //   redirectTo('/profile');
     //   return;
     // }
 
-    if (isRouteMatched(path, verifiedRoutes) && !user.referred) {
+    if (isRouteMatched(path, verifiedRoutes) && !authData.referred) {
       redirectTo('/referral');
       return;
     }

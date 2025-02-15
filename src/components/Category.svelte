@@ -1,10 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import {
-    CoNexus,
-    type DynSectionCategory,
-    type DynTopic,
-  } from '@lib/conexus';
+    CoNexusApp
+  } from '@libv2/view';
   import { checkUserState, checkWeb3LoginState } from '@utils/route-guard';
   import { web3LoggedIn } from '@stores/account';
   import StoryCollection from './utils/StoryCollection.svelte';
@@ -13,7 +11,9 @@
   export let section: string;
   let isWeb3LoggedIn: boolean = false;
 
-  let categories: DynSectionCategory[] = [];
+  let app: CoNexusApp = new CoNexusApp();
+
+  let categories: SectionCategory[] = [];
   let genres: { id: number; name: string }[] = [];
 
   onMount(async () => {
@@ -24,21 +24,21 @@
     checkWeb3LoginState(isWeb3LoggedIn, section);
 
     try {
-      categories = await CoNexus.sectionCategories(section!);
+      categories = await app.getSectionCategories(section);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     }
     try {
-      genres = await CoNexus.getGenres();
+      genres = await app.getGenres();
     } catch (error) {
       console.error('Failed to fetch genres:', error);
     }
   });
 
   // Search and Sorting
-  let filteredCategories: DynSectionCategory[];
+  let filteredCategories: SectionCategory[];
   let isSorting: boolean = false;
-  let sortedCategories: DynSectionCategory[] = [];
+  let sortedCategories: SectionCategory[] = [];
   let searchField: string;
   let isSearching: boolean = false;
   let debounceTimeout: NodeJS.Timeout;
@@ -55,7 +55,7 @@
     resetGenres();
     isSearching = true; // Set isSearching to true when the debounce starts
     debounceTimeout = setTimeout(async () => {
-      filteredCategories = await CoNexus.searchCategories(
+      filteredCategories = await app.searchSectionCategories(
         searchField.replace(/[^a-zA-Z ]/g, ''),
         section,
       );
@@ -79,7 +79,7 @@
   };
 
   const handleSorting = () => {
-    sortedCategories = filteredCategories.map((cat: DynSectionCategory) => {
+    sortedCategories = filteredCategories.map((cat: SectionCategory) => {
       // Clone the category and topics to avoid mutating the original
       return {
         ...cat,
@@ -110,7 +110,7 @@
       searchField = '';
       handleSearch();
     }
-    filteredCategories = await CoNexus.getGenreTopics(genre);
+    filteredCategories = await app.getGenreTopics(genre);
     if (isSorting) handleSorting();
   }
 

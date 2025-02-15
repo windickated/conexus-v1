@@ -16,13 +16,15 @@ import { WagmiProvider } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, base } from 'wagmi/chains';
 
 import { web3LoggedIn, authenticated, availables } from '@stores/account';
+import { AccountAPI, AuthAPI } from '@service/routes';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-const url = import.meta.env.PUBLIC_BACKEND;
-
 const Web3Provider = ({ linking, children }) => {
   let AUTHENTICATION_STATUS: AuthenticationStatus = 'unauthenticated';
+
+  const authAPI = new AuthAPI(import.meta.env.PUBLIC_BACKEND);
+  const accountAPI = new AccountAPI(import.meta.env.PUBLIC_BACKEND);
 
   const config = getDefaultConfig({
     appName: 'Degenerous DAO',
@@ -35,20 +37,16 @@ const Web3Provider = ({ linking, children }) => {
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
-      console.log('Making request to fetch nonce:', url);
+      const { data, error } = await authAPI.web3Getnonce();
 
-      const response = await fetch(`${url}/rainbow/nonce`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) {
+      if (!data) {
+        console.error('Failed to fetch nonce:', error);
         throw new Error('Failed to fetch nonce');
       }
 
       AUTHENTICATION_STATUS = 'loading';
 
-      return await response.text();
+      return data.nonce;
     },
 
     createMessage: ({ nonce, address, chainId }) => {
@@ -83,27 +81,19 @@ const Web3Provider = ({ linking, children }) => {
     },
 
     verify: async ({ message, signature }) => {
-      console.log('Verifying signature with message:', message);
-
-      const urlPath = linking ? '/rainbow/linklogin' : '/rainbow/login';
-
-      const response = await fetch(`${url}${urlPath}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, signature }),
+      const { data, error } = await authAPI.web3WalletSignin({
+        message,
+        signature,
       });
 
-      if (!response.ok) {
+      if (!data) {
+        console.error('Failed to verify signature:', error);
         AUTHENTICATION_STATUS = 'unauthenticated';
-        console.error('Verification failed');
         return false;
       }
 
-      const data = await response.json();
-
       web3LoggedIn.set(true);
       authenticated.set({ user: data.user, loggedIn: true });
-      availables.set(data.available);
 
       AUTHENTICATION_STATUS = 'authenticated';
 
@@ -111,12 +101,17 @@ const Web3Provider = ({ linking, children }) => {
     },
 
     signOut: async () => {
-      await fetch(`${url}/signout`, {
-        method: 'POST',
-      });
+      const { data, error } = await accountAPI.logout();
+
+      if (!data) {
+        console.error('Failed to sign out:', error);
+        return;
+      }
 
       web3LoggedIn.set(false);
       authenticated.set({ user: null, loggedIn: false });
+
+      AUTHENTICATION_STATUS = 'unauthenticated';
     },
   });
 

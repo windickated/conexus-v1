@@ -90,6 +90,7 @@ export default class GameAPI extends Fetcher {
   async deleteStory(story_id: string) {
     return this.request<APISTDResposne>(`/game/delete-story/${story_id}`, {
       method: 'DELETE',
+      body: JSON.stringify({ story_id }),
     });
   }
 

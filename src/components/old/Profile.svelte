@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import { Account } from '@libv2/account';
+  import Account, { Roles } from '@lib/auth';
   import {
     authenticated,
     referralCodes,
@@ -17,14 +17,13 @@
   } from '@stores/modal';
   import { isAvailable } from '@utils/validation';
 
-  import WalletConnect from './web3/WalletConnect.svelte';
+  import WalletConnect from '../WalletConnect.svelte';
 
-  let account: Account;
+  Account.me();
+  Account.logged_in();
 
   onMount(async () => {
-    account = new Account();
-
-    account.me();
+    Account.cookie();
   });
 
   let dialog: HTMLDialogElement;
@@ -66,7 +65,7 @@
   const handleSignIn = async (event: Event) => {
     event.preventDefault();
     try {
-      await account.signin({
+      await Account.signin({
         email: loginMail,
         password: loginPassword,
       });
@@ -79,10 +78,10 @@
   };
 
   let activeWalletStyling = `
-      color: rgb(51, 226, 230);
-      background-color: rgb(45, 90, 216);
-      box-shadow: inset 0 0 0.5vw rgba(51, 226, 230, 0.25), 0 0 0.5vw rgba(51, 226, 230, 0.5);
-    `;
+    color: rgb(51, 226, 230);
+    background-color: rgb(45, 90, 216);
+    box-shadow: inset 0 0 0.5vw rgba(51, 226, 230, 0.25), 0 0 0.5vw rgba(51, 226, 230, 0.5);
+  `;
 
   const walletSelectConfirm = (address: string) => {
     $secondButton = 'Select';
@@ -97,7 +96,7 @@
 
   const handleWalletSelect = async (address: string) => {
     try {
-      await account.selectMainWallet(address);
+      await Account.setMainWallet(address);
       // reload the page to update the user object
       location.reload();
     } catch (error) {
@@ -114,8 +113,8 @@
     available = value;
   });
 
-  $: if (isLogged && account) {
-    account.getReferraLCodes();
+  $: if (isLogged) {
+    Account.referraLCodes();
   }
 
   let editingPassword: boolean = false;
@@ -160,7 +159,7 @@
   $: if (referralCode.length < 16) referralCodeValid = false;
   async function validateReferralCode() {
     const referralObject: ReferralCode | null =
-      await account.validateReferralCode(referralCode);
+      await Account.validateReferralCode(referralCode);
     if (referralObject) {
       referralCodeValid = true;
     } else {
@@ -170,7 +169,7 @@
 
   const referralSignup = async (event: Event) => {
     event.preventDefault();
-    await account.signup({
+    await Account.signupReferral({
       user: {
         first_name,
         last_name,
@@ -209,12 +208,12 @@
           <circle cy="-25" r="30" />
           <path
             d="
-                M -55 55
-                Q -60 20 -25 15
-                L 25 15
-                Q 60 20 55 55
-                Z
-              "
+              M -55 55
+              Q -60 20 -25 15
+              L 25 15
+              Q 60 20 55 55
+              Z
+            "
           />
         </g>
       </mask>
@@ -249,7 +248,7 @@
         <button
           class="login-button"
           on:click={() => {
-            account.signout();
+            Account.signout();
           }}
           on:pointerover={() => (signOutSvgFocus = true)}
           on:pointerout={() => (signOutSvgFocus = false)}
@@ -291,12 +290,12 @@
             <path
               style="transform: {signOutSvgFocus ? 'translateX(-10%)' : 'none'}"
               d="
-                  M 30 0
-                  L -80 0
-                  L -55 -25
-                  M -80 0
-                  L -55 25
-                "
+                M 30 0
+                L -80 0
+                L -55 -25
+                M -80 0
+                L -55 25
+              "
               fill="none"
             />
             <rect
@@ -323,12 +322,12 @@
                 <path
                   class="quit-svg-mask"
                   d="
-                      M 50 0
-                      L -50 0
-                      L 0 -50
-                      M -50 0
-                      L 0 50
-                    "
+                    M 50 0
+                    L -50 0
+                    L 0 -50
+                    M -50 0
+                    L 0 50
+                  "
                   fill="none"
                   stroke="black"
                   stroke-width="25"
@@ -341,12 +340,12 @@
 
             <circle
               style="
-                  transition: all 0.3s ease-in-out;
-                  transform: {backArrowSvgFocus ? 'scale(1.05);' : 'none'}
-                  fill: {backArrowSvgFocus
+                transition: all 0.3s ease-in-out;
+                transform: {backArrowSvgFocus ? 'scale(1.05);' : 'none'}
+                fill: {backArrowSvgFocus
                 ? 'rgb(51, 226, 230)'
                 : 'rgba(51, 226, 230, 0.75)'}
-                "
+              "
               fill="rgba(51, 226, 230, 0.75)"
               r="95"
               mask="url(#quit-svg-mask)"
@@ -368,19 +367,19 @@
           stroke-width="30"
           stroke-linecap="round"
           style="
-              transform: {closeSvgFocus ? 'scale(1.2);' : 'none'}
-              stroke: {closeSvgFocus
+            transform: {closeSvgFocus ? 'scale(1.2);' : 'none'}
+            stroke: {closeSvgFocus
             ? 'rgb(255, 60, 64)'
             : 'rgba(255, 60, 64, 0.85)'}
-            "
+          "
         >
           <path
             d="
-                M -65 -65
-                L 65 65
-                M -65 65
-                L 65 -65
-              "
+              M -65 -65
+              L 65 65
+              M -65 65
+              L 65 -65
+            "
             fill="none"
           />
         </svg>
@@ -530,11 +529,11 @@
                           <circle r="20" />
                           <path
                             d="
-                                M -80 0
-                                Q 0 -90 80 0
-                                Q 0 90 -80 0
-                                Z
-                              "
+                              M -80 0
+                              Q 0 -90 80 0
+                              Q 0 90 -80 0
+                              Z
+                            "
                           />
                         </g>
                         <line
@@ -551,11 +550,11 @@
                       <circle r="20" />
                       <path
                         d="
-                            M -80 0
-                            Q 0 -90 80 0
-                            Q 0 90 -80 0
-                            Z
-                          "
+                          M -80 0
+                          Q 0 -90 80 0
+                          Q 0 90 -80 0
+                          Z
+                        "
                       />
                     </g>
 
@@ -564,11 +563,11 @@
                         <circle r="20" />
                         <path
                           d="
-                              M -80 0
-                              Q 0 -90 80 0
-                              Q 0 90 -80 0
-                              Z
-                            "
+                            M -80 0
+                            Q 0 -90 80 0
+                            Q 0 90 -80 0
+                            Z
+                          "
                         />
                       </g>
                       <line x1="75" y1="-75" x2="-75" y2="75" />
@@ -735,10 +734,10 @@
                             />
                             <path
                               d="
-                                  M -10 10
-                                  L 10 40
-                                  L 50 -20
-                                "
+                                M -10 10
+                                L 10 40
+                                L 50 -20
+                              "
                               fill="none"
                               stroke="black"
                             />
@@ -747,12 +746,12 @@
 
                         <path
                           d="
-                              M 40 -67
-                              L 40 -90
-                              L -90 -90
-                              L -90 60
-                              L -52 60
-                            "
+                            M 40 -67
+                            L 40 -90
+                            L -90 -90
+                            L -90 60
+                            L -52 60
+                          "
                           fill="none"
                         />
                         <rect
@@ -773,7 +772,7 @@
                 .length}
             </h2>
           {:else}
-            <button on:click={account.generateReferralCode}>
+            <button on:click={Account.generateReferralCode}>
               Get referral codes
             </button>
           {/if}
@@ -866,12 +865,12 @@
                       ? 'translateX(10%)'
                       : 'none'}"
                     d="
-                        M -80 0
-                        L 30 0
-                        L 5 -25
-                        M 30 0
-                        L 5 25
-                      "
+                      M -80 0
+                      L 30 0
+                      L 5 -25
+                      M 30 0
+                      L 5 25
+                    "
                     fill="none"
                   />
                   <rect
@@ -900,7 +899,7 @@
             <div class="buttons-container">
               <button
                 on:click={() => {
-                  account.googleSignin();
+                  Account.google_login();
                 }}
               >
                 <img class="sign-icon" src="/icons/google.png" alt="Google" />
@@ -1015,11 +1014,11 @@
                         <circle r="20" />
                         <path
                           d="
-                              M -80 0
-                              Q 0 -90 80 0
-                              Q 0 90 -80 0
-                              Z
-                            "
+                            M -80 0
+                            Q 0 -90 80 0
+                            Q 0 90 -80 0
+                            Z
+                          "
                         />
                       </g>
                       <line x1="55" y1="-75" x2="-95" y2="75" stroke="black" />
@@ -1030,11 +1029,11 @@
                     <circle r="20" />
                     <path
                       d="
-                          M -80 0
-                          Q 0 -90 80 0
-                          Q 0 90 -80 0
-                          Z
-                        "
+                        M -80 0
+                        Q 0 -90 80 0
+                        Q 0 90 -80 0
+                        Z
+                      "
                     />
                   </g>
 
@@ -1043,11 +1042,11 @@
                       <circle r="20" />
                       <path
                         d="
-                            M -80 0
-                            Q 0 -90 80 0
-                            Q 0 90 -80 0
-                            Z
-                          "
+                          M -80 0
+                          Q 0 -90 80 0
+                          Q 0 90 -80 0
+                          Z
+                        "
                       />
                     </g>
                     <line x1="75" y1="-75" x2="-75" y2="75" />
@@ -1127,7 +1126,7 @@
             {/if}
 
             {#if referralCode.length === 16}
-              {#await account.validateReferralCode(referralCode)}
+              {#await Account.validateReferralCode(referralCode)}
                 <p class="validation">Checking referral code...</p>
               {:then referralObject}
                 {#if referralObject}

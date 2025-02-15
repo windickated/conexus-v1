@@ -1,8 +1,11 @@
 <script lang="ts">
-  import { CoNexus } from '@lib/conexus';
+  import { CoNexusGame } from '@libv2/story';
 
   export let section: string;
   export let topicName: string;
+
+  const CoNexus: CoNexusGame = new CoNexusGame();
+
   const storyName: string = (
     topicName.charAt(0).toUpperCase() + topicName.slice(1)
   ).trim();

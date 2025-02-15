@@ -4,27 +4,22 @@
   import BackgroundMusic from '@components/music/BackgroundMusic.svelte';
   import Tts from '@components/music/Tts.svelte';
   import Step from '@components/Step.svelte';
-  import { CoNexusGame } from '@libv2/story';
+  import { CoNexus } from '@lib/conexus';
+  import type { DynTopic, ContinuableStory } from '@lib/conexus';
   import { loading, story, background_image } from '@stores/conexus';
+  import { checkUserState } from '@utils/route-guard';
+
   import {
     showModal,
     secondButton,
     handleSecondButton,
     modalContent,
   } from '@stores/modal';
-<<<<<<< HEAD
-  import Share from './utils/Share.svelte';
-=======
-  import { checkUserState } from '@utils/route-guard';
-  
-  import Share from './Share.svelte';
->>>>>>> 9049663 (refactor initial commit, using internal backend)
+  import Share from '../Share.svelte';
   import Profile from './Profile.svelte';
-  import BackArrow from './utils/BackArrow.svelte';
+  import BackArrow from '../BackArrow.svelte';
 
   export let story_name: string;
-
-  let game: CoNexusGame = new CoNexusGame();
 
   onMount(async () => {
     await checkUserState('/story');
@@ -46,18 +41,19 @@
     }`;
     $handleSecondButton = () => DeleteStory(story.story_id);
     $modalContent = `<h2>Are you sure you want to delete this story?</h2>
-        <h3>This action is irreversible. You will lose all progress on this story.</h3>`;
+      <h3>This action is irreversible. You will lose all progress on this story.</h3>`;
     $showModal = true;
   }
 
   async function DeleteStory(story_id: any) {
     try {
-      await game.delete(story_id);
+      await CoNexus.delete(story_id);
       deletedStories[deletedStories.length] = story_id;
       $showModal = false;
-      await game.storyContinuables(story_name!).then((continuables) => {
-        if (continuables.length == 0) noUnfinishedStoriesLeft = true;
-      });
+      await CoNexus.storyContinuable(story_name!)
+        .then((continuables) => {
+          if (continuables.length == 0) noUnfinishedStoriesLeft = true
+        })
     } catch (error) {
       console.log('Failed to delete story: ' + error);
     }
@@ -97,7 +93,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 {#if $story === null}
-  {#await game.getTopic(story_name)}
+  {#await CoNexus.getTopic(story_name!)}
     <header>
       <BackArrow href="./" />
       <Profile />
@@ -125,7 +121,7 @@
         </div>
       </section>
     </div>
-  {:then topic: SectionTopic}
+  {:then topic: DynTopic}
     <header>
       <BackArrow href="./" />
       <h1 class="fade-in">
@@ -135,7 +131,7 @@
     </header>
 
     <div class="story-container blur">
-      {#await game.fetch_story_image(story_name!, 'description')}
+      {#await CoNexus.fetch_story_image(story_name!, 'description')}
         <div class="picture default-picture"></div>
       {:then storyImage}
         <img
@@ -161,7 +157,7 @@
         <div class="story-buttons-container">
           <Share />
           <button
-            on:click={() => topic && game.startGame(topic.name)}
+            on:click={() => topic && CoNexus.start(topic.name)}
             disabled={$loading}
             style={$loading ? 'color: rgb(51, 226, 230)' : ''}
           >
@@ -178,8 +174,8 @@
               >
                 <path
                   d="
-                      M 50 96 a 46 46 0 0 1 0 -92 46 46 0 0 1 0 92
-                    "
+                    M 50 96 a 46 46 0 0 1 0 -92 46 46 0 0 1 0 92
+                  "
                   transform-origin="50 50"
                 />
               </svg>
@@ -193,7 +189,7 @@
     </div>
   {:catch}
     <header>
-      <BackArrow href="./" />
+      <a class="arrow" aria-label="Back arrow" href="./"></a>
       <Profile />
     </header>
 
@@ -219,7 +215,7 @@
     </div>
   {/await}
 
-  {#await game.storyContinuables(story_name!) then continuables: ContinuableStory[]}
+  {#await CoNexus.storyContinuable(story_name!) then continuables: ContinuableStory[]}
     {#if continuables.length > 0}
       {#if !noUnfinishedStoriesLeft}
         <section class="unfinished-stories fade-in blur">
@@ -249,11 +245,11 @@
                     <path
                       id="delete-icon-{continuable.story_id}"
                       d="
-                          M -35 -35
-                          L 35 35
-                          M -35 35
-                          L 35 -35
-                        "
+                        M -35 -35
+                        L 35 35
+                        M -35 35
+                        L 35 -35
+                      "
                     />
                     <circle id="delete-circle-{continuable.story_id}" r="90" />
                   </svg>
@@ -272,7 +268,7 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     on:click|preventDefault={() => {
-                      if (!$loading) game.continueGame(continuable);
+                      if (!$loading) CoNexus.continue(continuable);
                     }}
                     on:pointerover={() =>
                       handlePlaySvg(continuable.story_id, 'focus')}
@@ -284,8 +280,8 @@
                     <polygon
                       id="play-icon-{continuable.story_id}"
                       points="
-                          -26 -36 -26 36 36 0
-                        "
+                        -26 -36 -26 36 36 0
+                      "
                       fill="rgb(0, 185, 55)"
                     />
                     <circle id="play-circle-{continuable.story_id}" r="90" />
@@ -312,8 +308,8 @@
 <div
   class="bg-container"
   style="
-      background-image: url({backgroundImageUrl});
-      "
+    background-image: url({backgroundImageUrl});
+    "
 ></div>
 
 <style>
@@ -352,6 +348,25 @@
     text-align: center;
     color: rgba(51, 226, 230, 0.85);
     text-shadow: 0 0.5vw 0.5vw #010020;
+  }
+
+  .arrow {
+    height: 7vw;
+    width: 7vw;
+    z-index: 1;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex: none;
+    background-image: url('/icons/backArrow.avif');
+    opacity: 0.4;
+    cursor: pointer;
+  }
+
+  .arrow:hover,
+  .arrow:active {
+    filter: drop-shadow(0 0 0.5vw rgba(51, 226, 230, 0.5));
+    opacity: 0.75;
   }
 
   .story-container {
@@ -416,35 +431,9 @@
   }
 
   .description {
-    max-height: 20vw;
     font-size: 1.5vw;
     line-height: 3vw;
     text-shadow: 0 0.25vw 0.25vw #010020;
-    overflow: auto;
-  }
-
-  .description::-webkit-scrollbar {
-    width: 0.5vw;
-  }
-
-  .description::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  .description::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0),
-      rgba(51, 226, 230, 0.5),
-      rgba(0, 0, 0, 0)
-    );
-    border-radius: 0.5vw;
-    cursor: pointer;
-  }
-
-  .description::-webkit-scrollbar-thumb:hover,
-  .description::-webkit-scrollbar-thumb:active {
-    background: rgba(51, 226, 230, 0.5);
   }
 
   .story-buttons-container {
@@ -573,6 +562,11 @@
       font-size: 1.5em;
     }
 
+    .arrow {
+      width: 3em;
+      height: 3em;
+    }
+
     .story-container {
       margin-top: 25%;
       max-width: 100%;
@@ -620,7 +614,6 @@
       font-size: 1em;
       line-height: 2em;
       width: 90vw;
-      max-height: none;
     }
 
     .story-buttons-container {
